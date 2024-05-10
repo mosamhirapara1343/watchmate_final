@@ -13,13 +13,14 @@ class StreamPlatformTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username="example", password="test@123")
-        self.token = Token.objects.get(user__username= self.user)
+        self.token = Token.objects.get(user__username=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-        self.stream = models.StreamPlatform.objects.create(name="Netflix", about="Streaming Platform", website="http://www.netflix.com")
+        self.stream = models.StreamPlatform.objects.create(name="Netflix", about="Streaming Platform",
+                                                           website="http://www.netflix.com")
 
     def test_streamplatform_create(self):
-        data= {
+        data = {
             "name": "Netflix",
             "about": "#1 Streaming Platform",
             "website": "http://netflix.com"
@@ -29,11 +30,11 @@ class StreamPlatformTestCase(APITestCase):
 
     def test_streamplatform_list(self):
         response = self.client.get(reverse('streamplatform-list'))
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_streamplatform_ind(self):
         response = self.client.get(reverse('streamplatform-detail', args=(self.stream.id,)))
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class WatchListTestCase(APITestCase):
@@ -45,14 +46,14 @@ class WatchListTestCase(APITestCase):
 
         self.stream = models.StreamPlatform.objects.create(name="Netflix", about="Streaming Platform",
                                                            website="http://www.netflix.com")
-        self.watchlist = models.WatchList.objects.create(platform=self.stream, title = "Example Movie",
+        self.watchlist = models.WatchList.objects.create(platform=self.stream, title="Example Movie",
                                                          storyline="Example Movie", active=True)
 
     def test_watchlist_create(self):
         data = {
             "platform": self.stream,
             "title": "Example Movie",
-            "storyline":"Example story",
+            "storyline": "Example story",
             "active": True
         }
         response = self.client.post(reverse('watch-list'), data)
@@ -66,7 +67,7 @@ class WatchListTestCase(APITestCase):
         response = self.client.get(reverse('watch-detail', args=(self.watchlist.id,)))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(models.WatchList.objects.count(), 1)
-        self.assertEqual(models.WatchList.objects.get().title,'Example Movie')
+        self.assertEqual(models.WatchList.objects.get().title, 'Example Movie')
 
 
 class ReviewTestCase(APITestCase):
@@ -82,9 +83,10 @@ class ReviewTestCase(APITestCase):
                                                          storyline="Example Movie", active=True)
 
         self.watchlist2 = models.WatchList.objects.create(platform=self.stream, title="Example Movie",
-                                                         storyline="Example Movie", active=True)
-        self.review = models.Review.objects.create(review_user=self.user, rating = 5, description="great movie",
+                                                          storyline="Example Movie", active=True)
+        self.review = models.Review.objects.create(review_user=self.user, rating=5, description="great movie",
                                                    watchlist=self.watchlist2, active=True)
+
     def test_review_create(self):
         data = {
             "review_user": self.user,
@@ -94,7 +96,7 @@ class ReviewTestCase(APITestCase):
             "active": True
         }
 
-        response = self.client.post(reverse('review-create', args=(self.watchlist.id, )), data)
+        response = self.client.post(reverse('review-create', args=(self.watchlist.id,)), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Review.objects.count(), 2)
 
